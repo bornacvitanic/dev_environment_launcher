@@ -1,3 +1,9 @@
+use structopt::StructOpt;
+use crate::cli::Cli;
+
+mod cli;
+
 fn main() {
-    println!("Hello, world!");
+    let args = Cli::from_args();
+    println!("{:?}", args.project_dir)
 }
