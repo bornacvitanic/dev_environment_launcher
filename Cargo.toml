@@ -4,3 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+#To set up a basic command-line interface (CLI)
+structopt = "0.3"
+structopt-derive = "0.4"
