@@ -3,16 +3,19 @@ use structopt_derive::StructOpt;
 
 #[derive(StructOpt)]
 pub enum Command {
-    /// Specify a project path
+    /// Specify a project path to open
     Path { path: PathBuf },
 
-    /// Specify a recent project index
+    /// Specify a recent project index to open
     Recent { index: usize },
+
+    /// Specify a recent project index to remove
+    Remove { index: usize },
 
     /// List recent projects
     List,
 
-    /// Interactive menu to select recent project
+    /// Interactive menu to select recent project to open
     Menu
 }
 

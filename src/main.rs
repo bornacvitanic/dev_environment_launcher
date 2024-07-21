@@ -48,6 +48,15 @@ fn main() {
                 return;
             }
         }
+        Some(Command::Remove { index}) => {
+            if let Some(project) = recent_projects.remove_project(index){
+                println!("Removed {} from recent projects", project.display());
+                recent_projects.save(&config_dir).expect("Failed to save recent projects.");
+            } else {
+                eprintln!("Invalid recent project index.")
+            }
+            return;
+        }
         Some(Command::List) => {
             recent_projects.list_projects();
             return;

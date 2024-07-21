@@ -41,6 +41,14 @@ impl RecentProjects {
         }
     }
 
+    pub fn remove_project(&mut self, index: usize) -> Option<PathBuf> {
+        if index < self.projects.len() {
+            Some(self.projects.remove(index))
+        } else {
+            None
+        }
+    }
+
     pub fn get_project(&self, index: usize) -> Option<&PathBuf> {
         self.projects.get(index)
     }
