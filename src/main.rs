@@ -1,13 +1,15 @@
-use std::{env, fs};
-use std::path::{Path, PathBuf};
+use std::{env};
+use std::path::{Path};
 use std::str::FromStr;
 use structopt::StructOpt;
 use crate::cli::Cli;
 use crate::project_type::ProjectType;
+use crate::utils::open_unity_project;
 
 mod cli;
 mod utils;
 mod project_type;
+mod unity;
 
 fn main() {
     let args = Cli::from_args();
@@ -28,48 +30,6 @@ fn main() {
         Some(ProjectType::Rust) => open_rust_project(&project_dir),
         None => eprintln!("Project type not recognized."),
     }
-}
-
-fn open_unity_project(project_path: &Path){
-    utils::open_unity_project(&project_path);
-    open_sln_file(&project_path);
-    utils::open_lazygit(&project_path);
-    let packages_path = project_path.join("Packages");
-    utils::open_directory(&packages_path);
-    let packages = get_packages(&packages_path);
-    for package in &packages {
-        utils::open_lazygit(&package);
-    }
-}
-
-fn get_packages(packages_path: &Path) -> Vec<PathBuf>{
-    let mut packages = Vec::new();
-    for entry  in fs::read_dir(&packages_path).unwrap() {
-        match entry {
-            Ok(entry) => {
-                let package_path = entry.path();
-                let package_json = package_path.join("package.json");
-                if package_path.is_dir() && package_json.exists() {
-                    packages.push(package_path);
-                }
-            }
-            Err(e) => eprintln!("Error reading package entry: {}, Error: {}", packages_path.display(), e)
-        }
-    }
-    packages
-}
-
-fn open_sln_file(project_path: &Path){
-    for entry in fs::read_dir(project_path).unwrap() {
-        let entry = entry.unwrap();
-        let file_path = entry.path();
-        if file_path.extension().unwrap_or_default() == "sln" {
-            println!("Opening solution file: {}", file_path.display());
-            utils::open_file(&file_path);
-            return;
-        }
-    }
-    eprintln!("No .sln file found in the project directory.")
 }
 
 fn open_rust_project(project_path: &Path){
