@@ -1,5 +1,4 @@
 use std::{env};
-use std::str::FromStr;
 use structopt::StructOpt;
 use crate::cli::Cli;
 use crate::project_type::ProjectType;
