@@ -1,4 +1,4 @@
-use std::fs;
+use std::{env, fs};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::fmt;
@@ -38,15 +38,19 @@ impl fmt::Display for ProjectType {
 fn main() {
     let args = Cli::from_args();
     println!("Project type: {:?}", args.project_type);
-    println!("Project directory: {:?}", args.project_dir);
 
-    if args.project_dir.is_dir() {
+    let project_dir = args.project_dir
+        .unwrap_or_else(|| env::current_dir().expect("Failed to get current directory"));
+
+    println!("Project directory: {:?}", project_dir);
+
+    if project_dir.is_dir() {
         match args.project_type {
-            ProjectType::Unity => { open_unity_project(&args.project_dir); }
-            ProjectType::Rust => { open_rust_project(&args.project_dir); }
+            ProjectType::Unity => open_unity_project(&project_dir),
+            ProjectType::Rust => open_rust_project(&project_dir),
         }
     } else {
-        eprintln!("Provided path is not a directory.")
+        eprintln!("Provided path is not a directory.");
     }
 }
 

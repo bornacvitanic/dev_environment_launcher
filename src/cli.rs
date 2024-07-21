@@ -7,5 +7,5 @@ pub struct Cli {
     #[structopt(parse(try_from_str))]
     pub project_type: ProjectType,
     #[structopt(parse(from_os_str))]
-    pub project_dir: PathBuf
+    pub project_dir: Option<PathBuf>
 }
