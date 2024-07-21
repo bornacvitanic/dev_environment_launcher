@@ -10,10 +10,14 @@ pub fn open_file(path: &Path) {
 
     #[cfg(target_os = "windows")]
     {
-        Command::new("cmd")
-            .args(&["/C", path.to_str().unwrap()])
-            .spawn()
-            .unwrap();
+        let result = Command::new("cmd")
+            .args(&["/C", "start", "", path.to_str().unwrap()])
+            .spawn();
+
+        match result {
+            Ok(_) => println!("Opened file {}", path.display()),
+            Err(e) => eprintln!("Error opening file: {}, Error: {}", path.display(), e),
+        }
     }
 }
 
