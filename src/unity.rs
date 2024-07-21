@@ -84,3 +84,82 @@ pub fn open_in_unity(unity_hub_path: PathBuf, project_path: &Path) {
         None => eprintln!("Failed to read Unity version from ProjectVersion.txt"),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::{self, File};
+    use tempfile::tempdir;
+    use std::io::Write;
+
+    #[test]
+    fn test_get_packages() {
+        let temp_dir = tempdir().unwrap();
+        let packages_path = temp_dir.path();
+
+        // Create mock package directories with package.json files
+        let package1_path = packages_path.join("package1");
+        fs::create_dir(&package1_path).unwrap();
+        File::create(package1_path.join("package.json")).unwrap();
+
+        let package2_path = packages_path.join("package2");
+        fs::create_dir(&package2_path).unwrap();
+        File::create(package2_path.join("package.json")).unwrap();
+
+        let package3_path = packages_path.join("package3");
+        fs::create_dir(&package3_path).unwrap();
+        // No package.json file in package3
+
+        let packages = get_packages(&packages_path);
+        assert_eq!(packages.len(), 2);
+        assert!(packages.contains(&package1_path));
+        assert!(packages.contains(&package2_path));
+    }
+
+    #[test]
+    fn test_get_packages_empty() {
+        let temp_dir = tempdir().unwrap();
+        let packages_path = temp_dir.path();
+
+        let packages = get_packages(&packages_path);
+        assert!(packages.is_empty());
+    }
+
+    #[test]
+    fn test_get_unity_version() {
+        let temp_dir = tempdir().unwrap();
+        let project_settings_path = temp_dir.path().join("ProjectSettings");
+        fs::create_dir(&project_settings_path).unwrap();
+        let version_file_path = project_settings_path.join("ProjectVersion.txt");
+
+        // Write a mock ProjectVersion.txt file
+        let mut file = File::create(version_file_path).unwrap();
+        writeln!(file, "m_EditorVersion: 2019.4.1f1").unwrap();
+
+        let version = get_unity_version(temp_dir.path()).unwrap();
+        assert_eq!(version, "2019.4.1f1");
+    }
+
+    #[test]
+    fn test_get_unity_version_no_file() {
+        let temp_dir = tempdir().unwrap();
+
+        let version = get_unity_version(temp_dir.path());
+        assert!(version.is_none());
+    }
+
+    #[test]
+    fn test_get_unity_version_invalid_format() {
+        let temp_dir = tempdir().unwrap();
+        let project_settings_path = temp_dir.path().join("ProjectSettings");
+        fs::create_dir(&project_settings_path).unwrap();
+        let version_file_path = project_settings_path.join("ProjectVersion.txt");
+
+        // Write a mock ProjectVersion.txt file with invalid format
+        let mut file = File::create(version_file_path).unwrap();
+        writeln!(file, "some_invalid_format").unwrap();
+
+        let version = get_unity_version(temp_dir.path());
+        assert!(version.is_none());
+    }
+}
