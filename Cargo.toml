@@ -7,6 +7,7 @@ edition = "2021"
 # To set up a basic command-line interface (CLI)
 structopt = "0.3"
 structopt-derive = "0.4"
+dialoguer = "0.11.0"
 # To handle config files
 toml = "0.8.15"
 config = "0.14.0"

@@ -1,8 +1,9 @@
 use std::{env, fs};
 use structopt::StructOpt;
-use crate::cli::Cli;
+use crate::cli::{Cli, Command};
 use crate::config::Config;
 use crate::project_type::ProjectType;
+use crate::recent_projects::RecentProjects;
 use crate::rust::open_rust_project;
 use crate::unity::open_unity_project;
 use crate::utils::prompt_user_for_path;
@@ -13,6 +14,7 @@ mod project_type;
 mod unity;
 mod rust;
 mod config;
+mod recent_projects;
 
 const APP_NAME: &str = "dev_environment_launcher";
 
@@ -25,8 +27,6 @@ fn main() {
     // Ensure the configuration directory exists
     fs::create_dir_all(&config_dir).expect("Failed to create config directory");
 
-    fs::create_dir_all(config_dir).expect("Failed to create config directory");
-
     if !std::path::Path::new(&config_path).exists() {
         Config::create_default(&config_path).expect("Failed to create default configuration file.");
         println!("Created default configuration file at {}", config_path.display());
@@ -36,8 +36,31 @@ fn main() {
 
     let args = Cli::from_args();
 
-    let project_dir = args.project_dir
-        .unwrap_or_else(|| env::current_dir().expect("Failed to get current directory"));
+    let mut recent_projects = RecentProjects::load(&config_dir).expect("Failed to load recent projects");
+
+    let project_dir = match args.command {
+        Some(Command::Path { path }) => path,
+        Some(Command::Recent { index }) => {
+            if let Some(project) = recent_projects.get_project(index) {
+                project.clone()
+            } else {
+                eprintln!("Invalid recent project index.");
+                return;
+            }
+        }
+        Some(Command::List) => {
+            recent_projects.list_projects();
+            return;
+        }
+        Some(Command::Menu) => {
+            if let Some(project) = recent_projects.interactive_menu() {
+                project
+            } else {
+                return;
+            }
+        }
+        None => env::current_dir().expect("Failed to get current directory")
+    };
 
     if !project_dir.is_dir() {
         eprintln!("Provided path is not a directory.");
@@ -66,4 +89,7 @@ fn main() {
         }
         None => eprintln!("Project type not recognized."),
     }
+
+    recent_projects.add_project(project_dir.clone());
+    recent_projects.save(&config_dir).expect("Failed to save recent projects.")
 }
