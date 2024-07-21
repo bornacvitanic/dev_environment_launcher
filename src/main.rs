@@ -4,7 +4,7 @@ use structopt::StructOpt;
 use crate::cli::Cli;
 use crate::project_type::ProjectType;
 use crate::rust::open_rust_project;
-use crate::utils::open_unity_project;
+use crate::unity::open_unity_project;
 
 mod cli;
 mod utils;
