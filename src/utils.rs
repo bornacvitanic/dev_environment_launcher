@@ -28,10 +28,14 @@ pub fn open_directory(path: &Path) {
 
     #[cfg(target_os = "windows")]
     {
-        Command::new("explorer")
+        let result = Command::new("explorer")
             .arg(path)
-            .spawn()
-            .unwrap();
+            .spawn();
+
+        match result {
+            Ok(_) => println!("Opened directory {}", path.display()),
+            Err(e) => eprintln!("Error opening directory: {}, Error: {}", path.display(), e),
+        }
     }
 }
 
