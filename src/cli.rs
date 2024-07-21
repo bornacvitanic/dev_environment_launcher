@@ -12,6 +12,9 @@ pub enum Command {
     /// Specify a recent project index to remove
     Remove { index: usize },
 
+    /// Clears all recent projects
+    Clear,
+
     /// List recent projects
     Options,
 

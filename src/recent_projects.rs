@@ -49,6 +49,10 @@ impl RecentProjects {
         }
     }
 
+    pub fn clear_projects(&mut self) {
+        self.projects.clear()
+    }
+
     pub fn get_project(&self, index: usize) -> Option<&PathBuf> {
         self.projects.get(index)
     }

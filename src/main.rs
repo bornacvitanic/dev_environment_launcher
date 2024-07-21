@@ -57,6 +57,12 @@ fn main() {
             }
             return;
         }
+        Some(Command::Clear) => {
+            recent_projects.clear_projects();
+            recent_projects.save(&config_dir).expect("Failed to save recent projects.");
+            println!("Cleared all recent projects.");
+            return;
+        }
         Some(Command::Options) => {
             recent_projects.list_projects();
             return;
