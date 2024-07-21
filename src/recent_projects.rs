@@ -106,3 +106,96 @@ impl RecentProjects {
         self.get_project(selection).cloned()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_load_non_existent_file() {
+        let temp_dir = tempdir().unwrap();
+        let config_dir = temp_dir.path();
+        let recent_projects = RecentProjects::load(config_dir).unwrap();
+        assert!(recent_projects.projects.is_empty());
+    }
+
+    #[test]
+    fn test_save_and_load() {
+        let temp_dir = tempdir().unwrap();
+        let config_dir = temp_dir.path();
+        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        recent_projects.add_project(PathBuf::from("/project1"));
+        recent_projects.save(config_dir).unwrap();
+
+        let loaded_projects = RecentProjects::load(config_dir).unwrap();
+        assert_eq!(loaded_projects.projects.len(), 1);
+        assert_eq!(loaded_projects.projects[0], PathBuf::from("/project1"));
+    }
+
+    #[test]
+    fn test_add_project() {
+        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        recent_projects.add_project(PathBuf::from("/project1"));
+        recent_projects.add_project(PathBuf::from("/project2"));
+        assert_eq!(recent_projects.projects.len(), 2);
+    }
+
+    #[test]
+    fn test_add_project_duplicate() {
+        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        recent_projects.add_project(PathBuf::from("/project1"));
+        recent_projects.add_project(PathBuf::from("/project1"));
+        assert_eq!(recent_projects.projects.len(), 1);
+    }
+
+    #[test]
+    fn test_add_project_limit() {
+        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        for i in 0..11 {
+            recent_projects.add_project(PathBuf::from(format!("/project{}", i)));
+        }
+        assert_eq!(recent_projects.projects.len(), 10);
+        assert_eq!(recent_projects.projects[0], PathBuf::from("/project1"));
+    }
+
+    #[test]
+    fn test_remove_project() {
+        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        recent_projects.add_project(PathBuf::from("/project1"));
+        recent_projects.add_project(PathBuf::from("/project2"));
+        let removed_project = recent_projects.remove_project(0);
+        assert_eq!(removed_project, Some(PathBuf::from("/project1")));
+        assert_eq!(recent_projects.projects.len(), 1);
+    }
+
+    #[test]
+    fn test_remove_project_out_of_bounds() {
+        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        let removed_project = recent_projects.remove_project(0);
+        assert_eq!(removed_project, None);
+    }
+
+    #[test]
+    fn test_clear_projects() {
+        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        recent_projects.add_project(PathBuf::from("/project1"));
+        recent_projects.clear_projects();
+        assert!(recent_projects.projects.is_empty());
+    }
+
+    #[test]
+    fn test_get_project() {
+        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        recent_projects.add_project(PathBuf::from("/project1"));
+        let project = recent_projects.get_project(0);
+        assert_eq!(project, Some(&PathBuf::from("/project1")));
+    }
+
+    #[test]
+    fn test_get_project_out_of_bounds() {
+        let recent_projects = RecentProjects { projects: Vec::new() };
+        let project = recent_projects.get_project(0);
+        assert_eq!(project, None);
+    }
+}

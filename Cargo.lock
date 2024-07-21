@@ -181,6 +181,7 @@ dependencies = [
  "serde_derive",
  "structopt",
  "structopt-derive",
+ "tempfile",
  "toml",
 ]
 
