@@ -1,4 +1,5 @@
-use std::{env, fs};
+use std::{env, fs, io};
+use std::io::Write;
 use std::path::PathBuf;
 use structopt::StructOpt;
 use crate::cli::Cli;
@@ -13,6 +14,14 @@ mod project_type;
 mod unity;
 mod rust;
 mod config;
+
+fn prompt_user_for_path(prompt: &str) -> PathBuf {
+    print!("{}", prompt);
+    io::stdout().flush().unwrap();
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    PathBuf::from(input.trim())
+}
 
 fn main() {
     let app_name = "dev_environment_launcher";
@@ -42,7 +51,7 @@ fn main() {
         println!("Created default configuration file at {}", config_path.display());
     }
 
-    let config = Config::from_file(&config_path).expect("Failed to load configuration");
+    let mut config = Config::from_file(&config_path).expect("Failed to load configuration");
 
     let args = Cli::from_args();
 
@@ -58,8 +67,22 @@ fn main() {
     println!("Project type: {:?}", project_type);
 
     match project_type {
-        Some(ProjectType::Unity) => open_unity_project(config.unity.editor_base_path, &project_dir),
-        Some(ProjectType::Rust) => open_rust_project(config.rust.ide_path.as_path(), &project_dir),
+        Some(ProjectType::Unity) => {
+            if config.unity.editor_base_path.to_str() == Some("") {
+                let path = prompt_user_for_path("Enter the Unity editor base path: ");
+                config.unity.editor_base_path = path;
+                config.save_to_file(&config_path).expect("Failed to save configuration.");
+            }
+            open_unity_project(config.unity.editor_base_path, &project_dir);
+        }
+        Some(ProjectType::Rust) => {
+            if config.rust.ide_path.to_str() == Some("") {
+                let path = prompt_user_for_path("Enter the Rust IDE path: ");
+                config.rust.ide_path = path;
+                config.save_to_file(&config_path).expect("Failed to save configuration.");
+            }
+            open_rust_project(&config.rust.ide_path, &project_dir);
+        }
         None => eprintln!("Project type not recognized."),
     }
 }

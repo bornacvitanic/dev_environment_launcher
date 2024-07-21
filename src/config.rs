@@ -38,4 +38,9 @@ impl Config {
         let toml = toml::to_string(&default_config).unwrap();
         fs::write(file, toml)
     }
+
+    pub fn save_to_file(&self, file: &PathBuf) -> Result<(), std::io::Error> {
+        let toml = toml::to_string(self).unwrap();
+        fs::write(file, toml)
+    }
 }
