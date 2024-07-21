@@ -3,8 +3,8 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use crate::{utils};
 
-pub fn open_unity_project(project_path: &Path){
-    open_in_unity(&project_path);
+pub fn open_unity_project(unity_hub_path: PathBuf, project_path: &Path){
+    open_in_unity(unity_hub_path, &project_path);
     open_sln_file(&project_path);
     utils::open_lazygit(&project_path);
     let packages_path = project_path.join("Packages");
@@ -58,11 +58,11 @@ pub fn get_unity_version(project_path: &Path) -> Option<String> {
     None
 }
 
-pub fn get_unity_editor_path(unity_version: &str) -> String {
-    format!("C:\\Program Files\\Unity\\Hub\\Editor\\{}\\Editor\\Unity.exe", unity_version)
+pub fn get_unity_editor_path(unity_hub_path: PathBuf, unity_version: &str) -> PathBuf {
+    unity_hub_path.join(unity_version).join("Editor").join("Unity.exe")
 }
 
-pub fn open_in_unity(project_path: &Path) {
+pub fn open_in_unity(unity_hub_path: PathBuf, project_path: &Path) {
     if !project_path.exists() {
         eprintln!("Project directory does not exist: {}", project_path.display());
         return;
@@ -70,7 +70,7 @@ pub fn open_in_unity(project_path: &Path) {
 
     match get_unity_version(project_path) {
         Some(unity_version) => {
-            let unity_executable_path = get_unity_editor_path(&unity_version);
+            let unity_executable_path = get_unity_editor_path(unity_hub_path, &unity_version);
             let result = Command::new(&unity_executable_path)
                 .arg("-projectPath")
                 .arg(project_path)

@@ -1,6 +1,7 @@
 use std::{env};
 use structopt::StructOpt;
 use crate::cli::Cli;
+use crate::config::Config;
 use crate::project_type::ProjectType;
 use crate::rust::open_rust_project;
 use crate::unity::open_unity_project;
@@ -10,8 +11,24 @@ mod utils;
 mod project_type;
 mod unity;
 mod rust;
+mod config;
 
 fn main() {
+    let config_path = match env::consts::OS {
+        "windows" => {
+            format!("{}/dev_environment_launcher/config.toml", env::var("APPDATA").unwrap())
+        },
+        "macos" => {
+            format!("{}/Library/Application Support/dev_environment_launcher/config.toml", env::var("HOME").unwrap())
+        },
+        "linux" => {
+            format!("{}/.config/dev_environment_launcher/config.toml", env::var("HOME").unwrap())
+        },
+        _ => panic!("Unsupported OS"),
+    };
+
+    let config = Config::from_file(&config_path).expect("Failed to load configuration");
+
     let args = Cli::from_args();
 
     let project_dir = args.project_dir
@@ -26,8 +43,8 @@ fn main() {
     println!("Project type: {:?}", project_type);
 
     match project_type {
-        Some(ProjectType::Unity) => open_unity_project(&project_dir),
-        Some(ProjectType::Rust) => open_rust_project(&project_dir),
+        Some(ProjectType::Unity) => open_unity_project(config.unity.editor_base_path, &project_dir),
+        Some(ProjectType::Rust) => open_rust_project(config.rust.ide_path.as_path(), &project_dir),
         None => eprintln!("Project type not recognized."),
     }
 }
