@@ -20,6 +20,7 @@ pub enum Command {
 }
 
 #[derive(StructOpt)]
+#[structopt(name = "devenv", about = "A tool to open development project workspaces")]
 pub struct Cli {
     #[structopt(subcommand)]
     pub command: Option<Command>,

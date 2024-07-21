@@ -3,6 +3,10 @@ name = "dev_environment_launcher"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "devenv"
+path = "src/main.rs"
+
 [dependencies]
 # To set up a basic command-line interface (CLI)
 structopt = "0.3"
