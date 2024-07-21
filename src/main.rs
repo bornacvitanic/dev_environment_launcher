@@ -53,11 +53,12 @@ fn main() {
 fn open_sln_file(project_path: &Path){
     for entry in fs::read_dir(project_path).unwrap() {
         let entry = entry.unwrap();
-        let path = entry.path();
-        if path.extension().unwrap_or_default() == "sln" {
-            println!("Opening solution file: {}", path.display());
-            utils::open_file(&path);
+        let file_path = entry.path();
+        if file_path.extension().unwrap_or_default() == "sln" {
+            println!("Opening solution file: {}", file_path.display());
+            utils::open_file(&file_path);
             utils::open_lazygit(&project_path);
+            utils::open_unity_project(&project_path);
             return;
         }
     }
