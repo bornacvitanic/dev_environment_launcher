@@ -1,6 +1,4 @@
 use std::{env, fs};
-use std::io::Write;
-use std::path::PathBuf;
 use structopt::StructOpt;
 use crate::cli::Cli;
 use crate::config::Config;
@@ -18,18 +16,7 @@ mod config;
 
 fn main() {
     let app_name = "dev_environment_launcher";
-    let config_dir = match env::consts::OS {
-        "windows" => {
-            PathBuf::from(env::var("APPDATA").unwrap()).join(app_name)
-        },
-        "macos" => {
-            PathBuf::from(env::var("HOME").unwrap()).join("Library/Application Support").join(app_name)
-        },
-        "linux" => {
-            PathBuf::from(env::var("HOME").unwrap()).join(".config").join(app_name)
-        },
-        _ => panic!("Unsupported OS"),
-    };
+    let config_dir = Config::get_config_dir(app_name);
 
     // Create the full path to the configuration file
     let config_path = config_dir.join("config.toml");
