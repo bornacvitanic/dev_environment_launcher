@@ -11,7 +11,7 @@ mod utils;
 #[derive(Debug)]
 enum ProjectType {
     Unity,
-    Rust
+    Rust,
 }
 
 impl FromStr for ProjectType {
@@ -35,22 +35,36 @@ impl fmt::Display for ProjectType {
     }
 }
 
+impl ProjectType {
+    fn from_path(project_path: &Path) -> Option<ProjectType> {
+        if project_path.join("Assets").exists() && project_path.join("Packages").exists() && project_path.join("ProjectSettings").exists() {
+            Some(ProjectType::Unity)
+        } else if project_path.join("src").exists() && project_path.join("Cargo.toml").exists() && project_path.join("Cargo.lock").exists() {
+            Some(ProjectType::Rust)
+        } else {
+            None
+        }
+    }
+}
+
 fn main() {
     let args = Cli::from_args();
-    println!("Project type: {:?}", args.project_type);
 
     let project_dir = args.project_dir
         .unwrap_or_else(|| env::current_dir().expect("Failed to get current directory"));
 
-    println!("Project directory: {:?}", project_dir);
-
-    if project_dir.is_dir() {
-        match args.project_type {
-            ProjectType::Unity => open_unity_project(&project_dir),
-            ProjectType::Rust => open_rust_project(&project_dir),
-        }
-    } else {
+    if !project_dir.is_dir() {
         eprintln!("Provided path is not a directory.");
+        return;
+    }
+
+    let project_type = ProjectType::from_path(&project_dir);
+    println!("Project type: {:?}", project_type);
+
+    match project_type {
+        Some(ProjectType::Unity) => open_unity_project(&project_dir),
+        Some(ProjectType::Rust) => open_rust_project(&project_dir),
+        None => eprintln!("Project type not recognized."),
     }
 }
 
