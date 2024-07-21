@@ -1,4 +1,4 @@
-use std::{env};
+use std::{env, fs};
 use structopt::StructOpt;
 use crate::cli::Cli;
 use crate::config::Config;
@@ -26,6 +26,14 @@ fn main() {
         },
         _ => panic!("Unsupported OS"),
     };
+
+    let config_dir = std::path::Path::new(&config_path).parent().unwrap();
+    fs::create_dir_all(config_dir).expect("Failed to create config directory");
+
+    if !std::path::Path::new(&config_path).exists() {
+        Config::create_default(&config_path).expect("Failed to create default configuration file.");
+        println!("Created default configuration file at {}", config_path);
+    }
 
     let config = Config::from_file(&config_path).expect("Failed to load configuration");
 
