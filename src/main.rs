@@ -1,4 +1,4 @@
-use std::{env, fs, io};
+use std::{env, fs};
 use std::io::Write;
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -7,6 +7,7 @@ use crate::config::Config;
 use crate::project_type::ProjectType;
 use crate::rust::open_rust_project;
 use crate::unity::open_unity_project;
+use crate::utils::prompt_user_for_path;
 
 mod cli;
 mod utils;
@@ -14,14 +15,6 @@ mod project_type;
 mod unity;
 mod rust;
 mod config;
-
-fn prompt_user_for_path(prompt: &str) -> PathBuf {
-    print!("{}", prompt);
-    io::stdout().flush().unwrap();
-    let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
-    PathBuf::from(input.trim())
-}
 
 fn main() {
     let app_name = "dev_environment_launcher";

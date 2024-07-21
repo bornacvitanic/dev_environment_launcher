@@ -1,5 +1,15 @@
+use std::io;
+use std::io::Write;
 use std::process::Command;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+
+pub fn prompt_user_for_path(prompt: &str) -> PathBuf {
+    print!("{}", prompt);
+    io::stdout().flush().unwrap();
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    PathBuf::from(input.trim())
+}
 
 pub fn open_file(path: &Path) {
     if !path.exists() {
