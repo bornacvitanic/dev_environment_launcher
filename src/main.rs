@@ -1,4 +1,5 @@
 use std::{env, fs};
+use std::path::PathBuf;
 use structopt::StructOpt;
 use crate::cli::Cli;
 use crate::config::Config;
@@ -14,25 +15,31 @@ mod rust;
 mod config;
 
 fn main() {
-    let config_path = match env::consts::OS {
+    let app_name = "dev_environment_launcher";
+    let config_dir = match env::consts::OS {
         "windows" => {
-            format!("{}/dev_environment_launcher/config.toml", env::var("APPDATA").unwrap())
+            PathBuf::from(env::var("APPDATA").unwrap()).join(app_name)
         },
         "macos" => {
-            format!("{}/Library/Application Support/dev_environment_launcher/config.toml", env::var("HOME").unwrap())
+            PathBuf::from(env::var("HOME").unwrap()).join("Library/Application Support").join(app_name)
         },
         "linux" => {
-            format!("{}/.config/dev_environment_launcher/config.toml", env::var("HOME").unwrap())
+            PathBuf::from(env::var("HOME").unwrap()).join(".config").join(app_name)
         },
         _ => panic!("Unsupported OS"),
     };
 
-    let config_dir = std::path::Path::new(&config_path).parent().unwrap();
+    // Create the full path to the configuration file
+    let config_path = config_dir.join("config.toml");
+
+    // Ensure the configuration directory exists
+    fs::create_dir_all(&config_dir).expect("Failed to create config directory");
+
     fs::create_dir_all(config_dir).expect("Failed to create config directory");
 
     if !std::path::Path::new(&config_path).exists() {
         Config::create_default(&config_path).expect("Failed to create default configuration file.");
-        println!("Created default configuration file at {}", config_path);
+        println!("Created default configuration file at {}", config_path.display());
     }
 
     let config = Config::from_file(&config_path).expect("Failed to load configuration");
