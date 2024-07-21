@@ -104,4 +104,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) f
 ## Contact
 
 - **Email**: [borna.cvitanic@gmail.com](mailto:borna.cvitanic@gmail.com)
-- **GitHub Issues**: [GitHub Issues Page](https://github.com/bornacvitanic/rust-csharp-doc-generator/issues)
+- **GitHub Issues**: [GitHub Issues Page](https://github.com/bornacvitanic/dev_environment_launcher/issues)
