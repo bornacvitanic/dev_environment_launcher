@@ -40,7 +40,7 @@ fn main() {
 
     let project_dir = match args.command {
         Some(Command::Path { path }) => path,
-        Some(Command::Recent { index }) => {
+        Some(Command::Open { index }) => {
             if let Some(project) = recent_projects.get_project(index) {
                 project.clone()
             } else {
@@ -57,11 +57,11 @@ fn main() {
             }
             return;
         }
-        Some(Command::List) => {
+        Some(Command::Options) => {
             recent_projects.list_projects();
             return;
         }
-        Some(Command::Menu) => {
+        Some(Command::Recent) => {
             if let Some(project) = recent_projects.interactive_menu() {
                 project
             } else {

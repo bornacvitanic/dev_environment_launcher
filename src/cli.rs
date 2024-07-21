@@ -7,16 +7,16 @@ pub enum Command {
     Path { path: PathBuf },
 
     /// Specify a recent project index to open
-    Recent { index: usize },
+    Open { index: usize },
 
     /// Specify a recent project index to remove
     Remove { index: usize },
 
     /// List recent projects
-    List,
+    Options,
 
     /// Interactive menu to select recent project to open
-    Menu
+    Recent
 }
 
 #[derive(StructOpt)]
