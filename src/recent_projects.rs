@@ -63,16 +63,43 @@ impl RecentProjects {
         }
     }
 
+    fn format_project_display(name: &str, path: &str, max_name_length: usize) -> String {
+        // Format the project name to be left-aligned and padded to the maximum length
+        let formatted_name = format!("{:<width$}", name, width = max_name_length);
+
+        // Combine the formatted name and path with a separator (e.g., tabs or spaces)
+        format!("{}    {}", formatted_name, path)
+    }
+
     pub fn interactive_menu(&self) -> Option<PathBuf> {
         if self.projects.is_empty() {
             println!("No recent projects available.");
             return None;
         }
 
+        // Calculate the maximum length of the project names
+        let max_name_length = self.projects.iter().map(|p| {
+            p.file_name()
+                .and_then(|os_str| os_str.to_str())
+                .unwrap_or("Unknown file")
+                .len()
+        }).max().unwrap_or(0);
+
+        let items: Vec<String> = self.projects.iter().map(|p| {
+            let file_name = p.file_name()
+                .and_then(|os_str| os_str.to_str())
+                .unwrap_or("Unknown file");
+            let parent = p.parent()
+                .and_then(|os_str| os_str.to_str())
+                .unwrap_or("Unknown parent");
+
+            Self::format_project_display(file_name, parent, max_name_length)
+        }).collect();
+
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Select a recent project")
             .default(0)
-            .items(&self.projects.iter().map(|p| p.to_str().unwrap()).collect::<Vec<_>>())
+            .items(&items)
             .interact()
             .ok()?;
 
