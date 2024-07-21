@@ -14,9 +14,10 @@ mod unity;
 mod rust;
 mod config;
 
+const APP_NAME: &str = "dev_environment_launcher";
+
 fn main() {
-    let app_name = "dev_environment_launcher";
-    let config_dir = Config::get_config_dir(app_name);
+    let config_dir = Config::get_config_dir(APP_NAME);
 
     // Create the full path to the configuration file
     let config_path = config_dir.join("config.toml");
