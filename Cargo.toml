@@ -1,6 +1,10 @@
 [package]
 name = "dev_environment_launcher"
 version = "0.1.0"
+authors = ["Borna Cvitanić borna.cvitanic@gmail.com"]
+description = "Dev Environment Launcher is a command-line tool to help manage and open development projects for  work environments like Unity and Rust."
+repository = "https://github.com/bornacvitanic/rust-csharp-doc-generator"
+license = "MIT"
 edition = "2021"
 
 [[bin]]
