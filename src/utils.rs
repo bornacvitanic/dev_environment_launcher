@@ -1,7 +1,7 @@
 use std::io;
 use std::io::Write;
-use std::process::Command;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 pub fn prompt_user_for_path(prompt: &str) -> PathBuf {
     print!("{}", prompt);
@@ -38,9 +38,7 @@ pub fn open_directory(path: &Path) {
 
     #[cfg(target_os = "windows")]
     {
-        let result = Command::new("explorer")
-            .arg(path)
-            .spawn();
+        let result = Command::new("explorer").arg(path).spawn();
 
         match result {
             Ok(_) => println!("Opened directory {}", path.display()),
@@ -76,7 +74,15 @@ pub fn open_lazygit(path: &Path) {
     #[cfg(target_os = "windows")]
     {
         Command::new("cmd")
-            .args(["/C", "start", "cmd", "/K", "lazygit", "-p", git_path.to_str().unwrap()])
+            .args([
+                "/C",
+                "start",
+                "cmd",
+                "/K",
+                "lazygit",
+                "-p",
+                git_path.to_str().unwrap(),
+            ])
             .spawn()
             .unwrap();
     }

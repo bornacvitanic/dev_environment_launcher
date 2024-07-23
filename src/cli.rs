@@ -19,11 +19,14 @@ pub enum Command {
     Options,
 
     /// Interactive menu to select recent project to open
-    Recent
+    Recent,
 }
 
 #[derive(StructOpt)]
-#[structopt(name = "devenv", about = "A tool to open development project workspaces")]
+#[structopt(
+    name = "devenv",
+    about = "A tool to open development project workspaces"
+)]
 pub struct Cli {
     #[structopt(subcommand)]
     pub command: Option<Command>,
