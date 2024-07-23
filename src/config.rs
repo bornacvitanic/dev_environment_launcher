@@ -1,6 +1,6 @@
-use std::{env, fs};
-use std::path::{Path, PathBuf};
 use serde_derive::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
+use std::{env, fs};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RustConfig {
@@ -47,8 +47,12 @@ impl Config {
     pub fn get_config_dir(app_name: &str) -> PathBuf {
         match env::consts::OS {
             "windows" => PathBuf::from(env::var("APPDATA").unwrap()).join(app_name),
-            "macos" => PathBuf::from(env::var("HOME").unwrap()).join("Library/Application Support").join(app_name),
-            "linux" => PathBuf::from(env::var("HOME").unwrap()).join(".config").join(app_name),
+            "macos" => PathBuf::from(env::var("HOME").unwrap())
+                .join("Library/Application Support")
+                .join(app_name),
+            "linux" => PathBuf::from(env::var("HOME").unwrap())
+                .join(".config")
+                .join(app_name),
             _ => panic!("Unsupported OS"),
         }
     }

@@ -31,9 +31,15 @@ impl fmt::Display for ProjectType {
 
 impl ProjectType {
     pub(crate) fn from_path(project_path: &Path) -> Option<ProjectType> {
-        if project_path.join("Assets").exists() && project_path.join("Packages").exists() && project_path.join("ProjectSettings").exists() {
+        if project_path.join("Assets").exists()
+            && project_path.join("Packages").exists()
+            && project_path.join("ProjectSettings").exists()
+        {
             Some(ProjectType::Unity)
-        } else if project_path.join("src").exists() && project_path.join("Cargo.toml").exists() && project_path.join("Cargo.lock").exists() {
+        } else if project_path.join("src").exists()
+            && project_path.join("Cargo.toml").exists()
+            && project_path.join("Cargo.lock").exists()
+        {
             Some(ProjectType::Rust)
         } else {
             None

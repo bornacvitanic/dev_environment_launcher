@@ -1,6 +1,7 @@
 [![Test](https://github.com/bornacvitanic/dev_environment_launcher/actions/workflows/rust.yml/badge.svg)](https://github.com/bornacvitanic/dev_environment_launcher/actions/workflows/rust.yml)
 [![dependency status](https://deps.rs/repo/github/bornacvitanic/dev_environment_launcher/status.svg)](https://deps.rs/repo/github/bornacvitanic/dev_environment_launcher)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Crates.io](https://img.shields.io/crates/v/dev_environment_launcher.svg)](https://crates.io/crates/dev_environment_launcher)
 [![Download](https://img.shields.io/badge/download-releases-blue.svg)](https://github.com/bornacvitanic/dev_environment_launcher/releases)
 
 # Dev Environment Launcher
@@ -11,6 +12,17 @@ Dev Environment Launcher is a command-line tool to help manage and open developm
 - **Open Projects**: Easily open Unity and Rust projects from specified paths.
 - **Recent Projects**: Keep track of recent projects and select from them interactively.
 - **Configuration**: Customize IDE and editor paths for Unity and Rust.
+
+# Roadmap
+
+- **Auto-Completion**: Add shell auto-completion for commands and options.
+- **Interactive Prompts Enhancements**: Improve the interactive menu to include project metadata and support batch operations.
+- **Detailed Logs**: Add detailed logs for significant operations, including project opening, configuration changes, and errors.
+- **Verbose Mode**: Add a verbose mode to display detailed logs in the console.
+- **Support More Project/Environment Types**: Add support for various project types.
+- **Modular Architecture**: Design the system to allow easy addition of new project types.
+- **Project Templates**: Support multiple configurable environment templates for projects.
+
 
 ## Installation
 1. Clone the repository:

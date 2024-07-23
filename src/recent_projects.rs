@@ -1,15 +1,15 @@
-use std::path::{Path, PathBuf};
+use dialoguer::theme::ColorfulTheme;
+use dialoguer::Select;
+use serde_derive::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs;
-use dialoguer::Select;
-use dialoguer::theme::{ColorfulTheme};
-use serde_derive::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
 
 const RECENT_PROJECTS_FILE: &str = "recent_projects.toml";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RecentProjects {
-    projects: Vec<PathBuf>
+    projects: Vec<PathBuf>,
 }
 
 impl RecentProjects {
@@ -20,7 +20,9 @@ impl RecentProjects {
             let projects: RecentProjects = toml::from_str(&data)?;
             Ok(projects)
         } else {
-            Ok(RecentProjects { projects: Vec::new() })
+            Ok(RecentProjects {
+                projects: Vec::new(),
+            })
         }
     }
 
@@ -78,23 +80,34 @@ impl RecentProjects {
         }
 
         // Calculate the maximum length of the project names
-        let max_name_length = self.projects.iter().map(|p| {
-            p.file_name()
-                .and_then(|os_str| os_str.to_str())
-                .unwrap_or("Unknown file")
-                .len()
-        }).max().unwrap_or(0);
+        let max_name_length = self
+            .projects
+            .iter()
+            .map(|p| {
+                p.file_name()
+                    .and_then(|os_str| os_str.to_str())
+                    .unwrap_or("Unknown file")
+                    .len()
+            })
+            .max()
+            .unwrap_or(0);
 
-        let items: Vec<String> = self.projects.iter().map(|p| {
-            let file_name = p.file_name()
-                .and_then(|os_str| os_str.to_str())
-                .unwrap_or("Unknown file");
-            let parent = p.parent()
-                .and_then(|os_str| os_str.to_str())
-                .unwrap_or("Unknown parent");
+        let items: Vec<String> = self
+            .projects
+            .iter()
+            .map(|p| {
+                let file_name = p
+                    .file_name()
+                    .and_then(|os_str| os_str.to_str())
+                    .unwrap_or("Unknown file");
+                let parent = p
+                    .parent()
+                    .and_then(|os_str| os_str.to_str())
+                    .unwrap_or("Unknown parent");
 
-            Self::format_project_display(file_name, parent, max_name_length)
-        }).collect();
+                Self::format_project_display(file_name, parent, max_name_length)
+            })
+            .collect();
 
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Select a recent project")
@@ -124,7 +137,9 @@ mod tests {
     fn test_save_and_load() {
         let temp_dir = tempdir().unwrap();
         let config_dir = temp_dir.path();
-        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        let mut recent_projects = RecentProjects {
+            projects: Vec::new(),
+        };
         recent_projects.add_project(PathBuf::from("/project1"));
         recent_projects.save(config_dir).unwrap();
 
@@ -135,7 +150,9 @@ mod tests {
 
     #[test]
     fn test_add_project() {
-        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        let mut recent_projects = RecentProjects {
+            projects: Vec::new(),
+        };
         recent_projects.add_project(PathBuf::from("/project1"));
         recent_projects.add_project(PathBuf::from("/project2"));
         assert_eq!(recent_projects.projects.len(), 2);
@@ -143,7 +160,9 @@ mod tests {
 
     #[test]
     fn test_add_project_duplicate() {
-        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        let mut recent_projects = RecentProjects {
+            projects: Vec::new(),
+        };
         recent_projects.add_project(PathBuf::from("/project1"));
         recent_projects.add_project(PathBuf::from("/project1"));
         assert_eq!(recent_projects.projects.len(), 1);
@@ -151,7 +170,9 @@ mod tests {
 
     #[test]
     fn test_add_project_limit() {
-        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        let mut recent_projects = RecentProjects {
+            projects: Vec::new(),
+        };
         for i in 0..11 {
             recent_projects.add_project(PathBuf::from(format!("/project{}", i)));
         }
@@ -161,7 +182,9 @@ mod tests {
 
     #[test]
     fn test_remove_project() {
-        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        let mut recent_projects = RecentProjects {
+            projects: Vec::new(),
+        };
         recent_projects.add_project(PathBuf::from("/project1"));
         recent_projects.add_project(PathBuf::from("/project2"));
         let removed_project = recent_projects.remove_project(0);
@@ -171,14 +194,18 @@ mod tests {
 
     #[test]
     fn test_remove_project_out_of_bounds() {
-        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        let mut recent_projects = RecentProjects {
+            projects: Vec::new(),
+        };
         let removed_project = recent_projects.remove_project(0);
         assert_eq!(removed_project, None);
     }
 
     #[test]
     fn test_clear_projects() {
-        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        let mut recent_projects = RecentProjects {
+            projects: Vec::new(),
+        };
         recent_projects.add_project(PathBuf::from("/project1"));
         recent_projects.clear_projects();
         assert!(recent_projects.projects.is_empty());
@@ -186,7 +213,9 @@ mod tests {
 
     #[test]
     fn test_get_project() {
-        let mut recent_projects = RecentProjects { projects: Vec::new() };
+        let mut recent_projects = RecentProjects {
+            projects: Vec::new(),
+        };
         recent_projects.add_project(PathBuf::from("/project1"));
         let project = recent_projects.get_project(0);
         assert_eq!(project, Some(&PathBuf::from("/project1")));
@@ -194,7 +223,9 @@ mod tests {
 
     #[test]
     fn test_get_project_out_of_bounds() {
-        let recent_projects = RecentProjects { projects: Vec::new() };
+        let recent_projects = RecentProjects {
+            projects: Vec::new(),
+        };
         let project = recent_projects.get_project(0);
         assert_eq!(project, None);
     }

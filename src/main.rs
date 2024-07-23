@@ -1,5 +1,3 @@
-use std::{env, fs};
-use structopt::StructOpt;
 use crate::cli::{Cli, Command};
 use crate::config::Config;
 use crate::project_type::ProjectType;
@@ -7,14 +5,16 @@ use crate::recent_projects::RecentProjects;
 use crate::rust::open_rust_project;
 use crate::unity::open_unity_project;
 use crate::utils::prompt_user_for_path;
+use std::{env, fs};
+use structopt::StructOpt;
 
 mod cli;
-mod utils;
-mod project_type;
-mod unity;
-mod rust;
 mod config;
+mod project_type;
 mod recent_projects;
+mod rust;
+mod unity;
+mod utils;
 
 const APP_NAME: &str = "dev_environment_launcher";
 
@@ -29,14 +29,18 @@ fn main() {
 
     if !std::path::Path::new(&config_path).exists() {
         Config::create_default(&config_path).expect("Failed to create default configuration file.");
-        println!("Created default configuration file at {}", config_path.display());
+        println!(
+            "Created default configuration file at {}",
+            config_path.display()
+        );
     }
 
     let mut config = Config::from_file(&config_path).expect("Failed to load configuration");
 
     let args = Cli::from_args();
 
-    let mut recent_projects = RecentProjects::load(&config_dir).expect("Failed to load recent projects");
+    let mut recent_projects =
+        RecentProjects::load(&config_dir).expect("Failed to load recent projects");
 
     let project_dir = match args.command {
         Some(Command::Path { path }) => path,
@@ -48,10 +52,12 @@ fn main() {
                 return;
             }
         }
-        Some(Command::Remove { index}) => {
-            if let Some(project) = recent_projects.remove_project(index){
+        Some(Command::Remove { index }) => {
+            if let Some(project) = recent_projects.remove_project(index) {
                 println!("Removed {} from recent projects", project.display());
-                recent_projects.save(&config_dir).expect("Failed to save recent projects.");
+                recent_projects
+                    .save(&config_dir)
+                    .expect("Failed to save recent projects.");
             } else {
                 eprintln!("Invalid recent project index.")
             }
@@ -59,7 +65,9 @@ fn main() {
         }
         Some(Command::Clear) => {
             recent_projects.clear_projects();
-            recent_projects.save(&config_dir).expect("Failed to save recent projects.");
+            recent_projects
+                .save(&config_dir)
+                .expect("Failed to save recent projects.");
             println!("Cleared all recent projects.");
             return;
         }
@@ -74,7 +82,7 @@ fn main() {
                 return;
             }
         }
-        None => env::current_dir().expect("Failed to get current directory")
+        None => env::current_dir().expect("Failed to get current directory"),
     };
 
     if !project_dir.is_dir() {
@@ -90,7 +98,9 @@ fn main() {
             if config.unity.editor_base_path.to_str() == Some("") {
                 let path = prompt_user_for_path("Enter the Unity editor base path: ");
                 config.unity.editor_base_path = path;
-                config.save_to_file(&config_path).expect("Failed to save configuration.");
+                config
+                    .save_to_file(&config_path)
+                    .expect("Failed to save configuration.");
             }
             open_unity_project(config.unity.editor_base_path, &project_dir);
         }
@@ -98,7 +108,9 @@ fn main() {
             if config.rust.ide_path.to_str() == Some("") {
                 let path = prompt_user_for_path("Enter the Rust IDE path: ");
                 config.rust.ide_path = path;
-                config.save_to_file(&config_path).expect("Failed to save configuration.");
+                config
+                    .save_to_file(&config_path)
+                    .expect("Failed to save configuration.");
             }
             open_rust_project(&config.rust.ide_path, &project_dir);
         }
@@ -106,5 +118,7 @@ fn main() {
     }
 
     recent_projects.add_project(project_dir.clone());
-    recent_projects.save(&config_dir).expect("Failed to save recent projects.")
+    recent_projects
+        .save(&config_dir)
+        .expect("Failed to save recent projects.")
 }
