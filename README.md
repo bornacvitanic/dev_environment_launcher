@@ -1,4 +1,7 @@
-[![Test](https://github.com/bornacvitanic/dev_environment_launcher/actions/workflows/rust.yml/badge.svg)](https://github.com/bornacvitanic/dev_environment_launcher/actions/workflows/rust.yml) [![Download](https://img.shields.io/badge/download-releases-blue.svg)](https://github.com/bornacvitanic/dev_environment_launcher/releases)
+[![Test](https://github.com/bornacvitanic/dev_environment_launcher/actions/workflows/rust.yml/badge.svg)](https://github.com/bornacvitanic/dev_environment_launcher/actions/workflows/rust.yml)
+[![dependency status](https://deps.rs/repo/github/bornacvitanic/dev_environment_launcher/status.svg)](https://deps.rs/repo/github/bornacvitanic/dev_environment_launcher)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Download](https://img.shields.io/badge/download-releases-blue.svg)](https://github.com/bornacvitanic/dev_environment_launcher/releases)
 
 # Dev Environment Launcher
 
