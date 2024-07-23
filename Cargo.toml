@@ -5,7 +5,10 @@ authors = ["Borna Cvitanić borna.cvitanic@gmail.com"]
 description = "Dev Environment Launcher is a command-line tool to help manage and open development projects for  work environments like Unity and Rust."
 repository = "https://github.com/bornacvitanic/rust-csharp-doc-generator"
 license = "MIT"
+license-file = "LICENSE.md"
 edition = "2021"
+keywords = ["cli", "tool", "unity", "development", "project-management"]
+categories = ["command-line-utilities", "development-tools"]
 
 [[bin]]
 name = "devenv"
