@@ -20,7 +20,7 @@ pub fn open_file(path: &Path) {
     #[cfg(target_os = "windows")]
     {
         let result = Command::new("cmd")
-            .args(&["/C", "start", "", path.to_str().unwrap()])
+            .args(["/C", "start", "", path.to_str().unwrap()])
             .spawn();
 
         match result {
@@ -76,7 +76,7 @@ pub fn open_lazygit(path: &Path) {
     #[cfg(target_os = "windows")]
     {
         Command::new("cmd")
-            .args(&["/C", "start", "cmd", "/K", "lazygit", "-p", git_path.to_str().unwrap()])
+            .args(["/C", "start", "cmd", "/K", "lazygit", "-p", git_path.to_str().unwrap()])
             .spawn()
             .unwrap();
     }

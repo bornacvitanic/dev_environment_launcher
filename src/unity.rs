@@ -4,20 +4,20 @@ use std::process::Command;
 use crate::{utils};
 
 pub fn open_unity_project(unity_hub_path: PathBuf, project_path: &Path){
-    open_in_unity(unity_hub_path, &project_path);
-    open_sln_file(&project_path);
-    utils::open_lazygit(&project_path);
+    open_in_unity(unity_hub_path, project_path);
+    open_sln_file(project_path);
+    utils::open_lazygit(project_path);
     let packages_path = project_path.join("Packages");
     utils::open_directory(&packages_path);
     let packages = get_packages(&packages_path);
     for package in &packages {
-        utils::open_lazygit(&package);
+        utils::open_lazygit(package);
     }
 }
 
 pub fn get_packages(packages_path: &Path) -> Vec<PathBuf>{
     let mut packages = Vec::new();
-    for entry  in fs::read_dir(&packages_path).unwrap() {
+    for entry  in fs::read_dir(packages_path).unwrap() {
         match entry {
             Ok(entry) => {
                 let package_path = entry.path();
@@ -71,7 +71,7 @@ pub fn open_in_unity(unity_hub_path: PathBuf, project_path: &Path) {
     match get_unity_version(project_path) {
         Some(unity_version) => {
             let unity_executable_path = get_unity_editor_path(unity_hub_path, &unity_version);
-            let result = Command::new(&unity_executable_path)
+            let result = Command::new(unity_executable_path)
                 .arg("-projectPath")
                 .arg(project_path)
                 .spawn();
