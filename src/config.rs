@@ -56,4 +56,29 @@ impl Config {
             _ => panic!("Unsupported OS"),
         }
     }
+
+    pub fn get_config(config_dir: &PathBuf, config_path: &PathBuf) -> Result<Self, String> {
+        // Ensure the configuration directory exists
+        if let Err(e) = fs::create_dir_all(config_dir) {
+            return Err(format!("Failed to create config directory: {}", e));
+        }
+
+        if !Path::new(&config_path).exists() {
+            if let Err(e) = Config::create_default(config_path) {
+                return Err(format!(
+                    "Failed to create default configuration file: {}",
+                    e
+                ));
+            }
+            println!(
+                "Created default configuration file at {}",
+                config_path.display()
+            );
+        }
+
+        match Config::from_file(config_path) {
+            Ok(config) => Ok(config),
+            Err(e) => Err(format!("Failed to load configuration: {}", e)),
+        }
+    }
 }
