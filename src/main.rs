@@ -114,7 +114,11 @@ fn open_unity(config: &mut Config, config_path: &Path, project_dir: &Path) {
         config.unity.editor_base_path = prompt_user_for_path("Enter the json editor base path: ");
         save_config(config_path, config);
     }
-    open_unity_project(config.unity.editor_base_path.clone(), project_dir, &config.unity.json_editor_path);
+    open_unity_project(
+        config.unity.editor_base_path.clone(),
+        project_dir,
+        &config.unity.json_editor_path,
+    );
 }
 
 fn open_rust(config: &mut Config, config_path: &Path, project_dir: &Path) {
