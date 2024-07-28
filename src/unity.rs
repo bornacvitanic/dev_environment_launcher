@@ -3,7 +3,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-pub fn open_unity_project(unity_hub_path: PathBuf, project_path: &Path) {
+pub fn open_unity_project(unity_hub_path: PathBuf, project_path: &Path, json_editor_path: &Path) {
     open_in_unity(unity_hub_path, project_path);
     open_sln_file(project_path);
     utils::open_lazygit(project_path);
@@ -12,6 +12,23 @@ pub fn open_unity_project(unity_hub_path: PathBuf, project_path: &Path) {
     let packages = get_packages(&packages_path);
     for package in &packages {
         utils::open_lazygit(package);
+    }
+    let mut json_paths:Vec<PathBuf> = packages.iter().map(|p| p.join("package.json")).collect();
+    json_paths.insert(0,packages_path.join("manifest.json"));
+    open_json(json_editor_path, &json_paths);
+}
+
+fn open_json(json_editor_path: &Path, json_paths: &Vec<PathBuf>) {
+    let result = Command::new(json_editor_path)
+        .args(json_paths)
+        .spawn();
+    match result {
+        Ok(_) => println!("Opened package.json for {:?}", json_paths),
+        Err(e) => eprintln!(
+            "Failed to json file for {:?}. Error: {}",
+            json_paths,
+            e
+        ),
     }
 }
 

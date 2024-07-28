@@ -10,6 +10,7 @@ pub struct RustConfig {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UnityConfig {
     pub editor_base_path: PathBuf,
+    pub json_editor_path: PathBuf,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -33,13 +34,14 @@ impl Config {
             },
             unity: UnityConfig {
                 editor_base_path: PathBuf::new(),
+                json_editor_path: PathBuf::new(),
             },
         };
         let toml = toml::to_string(&default_config).unwrap();
         fs::write(file, toml)
     }
 
-    pub fn save_to_file(&self, file: &PathBuf) -> Result<(), std::io::Error> {
+    pub fn save_to_file(&self, file: &Path) -> Result<(), std::io::Error> {
         let toml = toml::to_string(self).unwrap();
         fs::write(file, toml)
     }

@@ -70,9 +70,9 @@ fn main() {
 fn open_project(
     project_dir: PathBuf,
     config: &mut Config,
-    config_path: &PathBuf,
+    config_path: &Path,
     recent_projects: &mut RecentProjects,
-    config_dir: &PathBuf,
+    config_dir: &Path,
 ) {
     if !project_dir.is_dir() {
         eprintln!("Provided path is not a directory.");
@@ -93,7 +93,7 @@ fn open_project(
     }
 }
 
-fn open_unity(config: &mut Config, config_path: &PathBuf, project_dir: &Path) {
+fn open_unity(config: &mut Config, config_path: &Path, project_dir: &Path) {
     if config
         .unity
         .editor_base_path
@@ -104,10 +104,20 @@ fn open_unity(config: &mut Config, config_path: &PathBuf, project_dir: &Path) {
         config.unity.editor_base_path = prompt_user_for_path("Enter the Unity editor base path: ");
         save_config(config_path, config);
     }
-    open_unity_project(config.unity.editor_base_path.clone(), project_dir);
+    if config
+        .unity
+        .json_editor_path
+        .to_str()
+        .unwrap_or("")
+        .is_empty()
+    {
+        config.unity.editor_base_path = prompt_user_for_path("Enter the json editor base path: ");
+        save_config(config_path, config);
+    }
+    open_unity_project(config.unity.editor_base_path.clone(), project_dir, &config.unity.json_editor_path);
 }
 
-fn open_rust(config: &mut Config, config_path: &PathBuf, project_dir: &Path) {
+fn open_rust(config: &mut Config, config_path: &Path, project_dir: &Path) {
     if config.rust.ide_path.to_str().unwrap_or("").is_empty() {
         config.rust.ide_path = prompt_user_for_path("Enter the Rust IDE path: ");
         save_config(config_path, config);
@@ -119,8 +129,8 @@ fn open_recent_project(
     index: usize,
     recent_projects: &mut RecentProjects,
     config: &mut Config,
-    config_path: &PathBuf,
-    config_dir: &PathBuf,
+    config_path: &Path,
+    config_dir: &Path,
 ) {
     if let Some(project) = recent_projects.get_project(index) {
         open_project(
@@ -135,7 +145,7 @@ fn open_recent_project(
     }
 }
 
-fn remove_project(index: usize, recent_projects: &mut RecentProjects, config_dir: &PathBuf) {
+fn remove_project(index: usize, recent_projects: &mut RecentProjects, config_dir: &Path) {
     if let Some(project) = recent_projects.remove_project(index) {
         println!("Removed {} from recent projects", project.display());
         save_recent_projects(config_dir, recent_projects);
@@ -144,7 +154,7 @@ fn remove_project(index: usize, recent_projects: &mut RecentProjects, config_dir
     }
 }
 
-fn clear_recent_projects(recent_projects: &mut RecentProjects, config_dir: &PathBuf) {
+fn clear_recent_projects(recent_projects: &mut RecentProjects, config_dir: &Path) {
     recent_projects.clear_projects();
     save_recent_projects(config_dir, recent_projects);
     println!("Cleared all recent projects.");
@@ -153,8 +163,8 @@ fn clear_recent_projects(recent_projects: &mut RecentProjects, config_dir: &Path
 fn open_interactive_project(
     recent_projects: &mut RecentProjects,
     config: &mut Config,
-    config_path: &PathBuf,
-    config_dir: &PathBuf,
+    config_path: &Path,
+    config_dir: &Path,
 ) {
     if let Some(project) = recent_projects.interactive_menu() {
         open_project(project, config, config_path, recent_projects, config_dir);
@@ -163,9 +173,9 @@ fn open_interactive_project(
 
 fn open_current_directory(
     config: &mut Config,
-    config_path: &PathBuf,
+    config_path: &Path,
     recent_projects: &mut RecentProjects,
-    config_dir: &PathBuf,
+    config_dir: &Path,
 ) {
     let project_dir = env::current_dir().expect("Failed to get current directory");
     open_project(
@@ -177,7 +187,7 @@ fn open_current_directory(
     );
 }
 
-fn save_config(config_path: &PathBuf, config: &mut Config) {
+fn save_config(config_path: &Path, config: &mut Config) {
     config
         .save_to_file(config_path)
         .expect("Failed to save configuration.");
