@@ -10,6 +10,7 @@ pub struct RustConfig {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UnityConfig {
     pub editor_base_path: PathBuf,
+    pub json_editor_path: PathBuf,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -33,13 +34,14 @@ impl Config {
             },
             unity: UnityConfig {
                 editor_base_path: PathBuf::new(),
+                json_editor_path: PathBuf::new(),
             },
         };
         let toml = toml::to_string(&default_config).unwrap();
         fs::write(file, toml)
     }
 
-    pub fn save_to_file(&self, file: &PathBuf) -> Result<(), std::io::Error> {
+    pub fn save_to_file(&self, file: &Path) -> Result<(), std::io::Error> {
         let toml = toml::to_string(self).unwrap();
         fs::write(file, toml)
     }
@@ -54,6 +56,31 @@ impl Config {
                 .join(".config")
                 .join(app_name),
             _ => panic!("Unsupported OS"),
+        }
+    }
+
+    pub fn get_config(config_dir: &PathBuf, config_path: &PathBuf) -> Result<Self, String> {
+        // Ensure the configuration directory exists
+        if let Err(e) = fs::create_dir_all(config_dir) {
+            return Err(format!("Failed to create config directory: {}", e));
+        }
+
+        if !Path::new(&config_path).exists() {
+            if let Err(e) = Config::create_default(config_path) {
+                return Err(format!(
+                    "Failed to create default configuration file: {}",
+                    e
+                ));
+            }
+            println!(
+                "Created default configuration file at {}",
+                config_path.display()
+            );
+        }
+
+        match Config::from_file(config_path) {
+            Ok(config) => Ok(config),
+            Err(e) => Err(format!("Failed to load configuration: {}", e)),
         }
     }
 }
