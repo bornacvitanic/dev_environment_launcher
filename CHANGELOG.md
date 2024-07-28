@@ -2,9 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.2.0] - 2024-07-28
 
 ### Documentation
+
+- Add initial CHANGELOG.md file
 
 - Update README.md to add crates.io badge
 
@@ -15,10 +17,21 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
+- Add support for opening json files to unity.rs and update config.rs to support specifying json editor path
+
+- Add cliff.toml file for changelog generation
+
 - Update Cargo.toml to add additional project fields
 
 
+### Refactors
+
+- Refactor main.rs to separate code out into methods
+
+
 ### Styling
+
+- Style unity.rs, config.rs and main.rs using fmt
 
 - Update files to format with fmt
 
