@@ -173,7 +173,7 @@ dependencies = [
 
 [[package]]
 name = "dev_environment_launcher"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "config",
  "dialoguer",
